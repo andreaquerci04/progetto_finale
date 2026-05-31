@@ -148,24 +148,29 @@ Eigen::VectorXd Vettore_v(const std::vector<std::vector<int>>& cicli, const std:
             
             if (std::find(vettore_archi.begin(), vettore_archi.end(), V_to_find) != vettore_archi.end())
             {
-                v(j) -= generatore.valore_volt;  //segno positivo
+                v(j) -= generatore.valore_volt;  //segno positivo 
             }
 
             else if (std::find(vettore_archi_inv.begin(), vettore_archi_inv.end(), V_to_find) != vettore_archi_inv.end())
             {
                 v(j) += generatore.valore_volt;  //segno negativo
             }
-        }
+            
+        }   //qua questi due if sono invertiti rispetto a quelli delle resistenze. Il motivo è che consideriamo un generatore positivo
+            //se si entra dal "-" e si esce dal "+", quindi se la coppia di nodi che indicano il generatore si trova in vettore_archi
+            //(ovvero la direzione esatta con cui si percorre la maglia) il valore dovrà essere negativo.
     }
     
     return v;    
 }
 //------------------------------------------------------------------------------------
 //appunti: ho riscontrato un problema con il sistema per fillare il vettore v. Se ci sono più maglie che generatori il vettore v
-//avrà dimensione minore rispetto alla matrice A, rendendo il sistema lineare irrisolvibile.
+//aveva dimensione minore rispetto alla matrice A, rendendo il sistema lineare irrisolvibile.
 
-//si è rivelato più semplice: basta iterare sulla dimensione dei cicli invece dei generatori
+//soluzione: basta iterare sulla dimensione dei cicli invece dei generatori
 
 //altro problema: il vettore dei termini noti veniva riempito ad ogni componente v(k). In questo modo si otteneva un vettore sbagliato
 //poiché si andava a mettere un generatore in una maglia potenzialmente composta solo da resistenze. 
+
+//soluzione: v(j) invece di v(k)
 

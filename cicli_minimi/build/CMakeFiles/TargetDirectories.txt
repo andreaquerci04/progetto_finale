@@ -1,0 +1,3 @@
+/home/pcsdocker/Data/progetto_finale/cicli_minimi/build/CMakeFiles/prova.dir
+/home/pcsdocker/Data/progetto_finale/cicli_minimi/build/CMakeFiles/edit_cache.dir
+/home/pcsdocker/Data/progetto_finale/cicli_minimi/build/CMakeFiles/rebuild_cache.dir

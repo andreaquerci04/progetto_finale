@@ -7,6 +7,12 @@
 std::vector<int> cam_min(int a, int b, const unidirected_graph<int>& grafo){
     std::vector<int> cammino;
     std::map<int, int> pred = dijkstra(grafo, a).second;
+    
+    //controllo di sicurezza nel caso non esista il cammino
+    if (pred.find(b) == pred.end() && a != b) {
+        return cammino; 
+    }
+    
     int cur = b;
     cammino.push_back(cur);
     while(cur!=a)
@@ -48,7 +54,14 @@ std::vector<bool> find_minimun_cycle(const std::vector<bool>& S, const unidirect
             int i = 0;
             for(const auto& v : grafo.all_nodes())
             {
-                std::vector<int> cammino = cam_min(v,v+N,grafo_primo);    
+                std::vector<int> cammino = cam_min(v,v+N,grafo_primo);  
+                
+                if(cammino.empty()) {
+					i++;
+					continue;
+				}  
+				
+				
                 for(int k = 0; k+1 < cammino.size(); k++)
                 {
                     int nodo_a = conv_nodo(cammino[k],N);
@@ -68,7 +81,7 @@ std::vector<bool> find_minimun_cycle(const std::vector<bool>& S, const unidirect
                     {
                         conteggio += C[j][k];    
                     }
-                if (conteggio < min_elementi)
+                if (conteggio < min_elementi && conteggio > 0) //modifica fatta aiiungendo conteggio >0
                 {
                     min_elementi = conteggio;
                     miglior_indice = j;
@@ -104,8 +117,79 @@ int dot_product(const std::vector<bool>& v_1, const std::vector<bool>& v_2){
     }
     
 
+//funzione per ricostruire percorso che si usa nella parte finale di conversione
+std::vector<int> ricostruisci_percorso(const std::unordered_set<int>& v, const unidirected_graph<int>& grafo){
+	
+    
+    std::vector<int> ciclo;
+    std::unordered_set<int> visitati;
+
+    ciclo.push_back(*v.begin());
+    visitati.insert(*v.begin());
+
+    while (ciclo.size() < v.size()) {
+        int corrente = ciclo.back();
+        bool trovato = false;
+
+        for (const int& vicino : grafo.neighbor(corrente)) {
+            if (v.count(vicino) && !visitati.count(vicino)) {
+                ciclo.push_back(vicino);
+                visitati.insert(vicino);
+                trovato = true;
+                break;
+            }
+        }
+
+
+    }
+	return ciclo;
+	}
+
+
+//conversione de pina da booleano con gli archi a ciclo con i nodi
+
+std::vector<std::vector<int>> cicli_depina_convertito(const std::vector<std::vector<bool>>& cicli, const unidirected_graph<int>& grafo){
+	int N = cicli.size();
+	int K = cicli[0].size();
+	std::vector<std::vector<int>> risultato;
+	
+	for(int i = 0; i<N; i++)
+	{
+		std::unordered_set<int> container;
+		for(int j = 0; j < K; j++)
+		{
+			if(cicli[i][j])
+			{
+				unidirected_edge<int> arco = grafo.edge_at(j);
+				container.insert(arco.from());
+				container.insert(arco.to());	
+			}	
+		}
+		
+		std::vector<int> v;
+		if(container.size()>= 4){
+				v = ricostruisci_percorso(container,grafo);
+				
+				}
+		else{
+		for(const auto& elementi : container){
+				v.push_back(elementi);
+				} 
+	
+		}
+	
+		risultato.push_back(v);	
+		
+	}
+	
+	
+	return risultato;
+	
+	}
+	
+
 //algoritmo di De Pina vero e proprio
-std::vector<std::vector<bool>> cicli_depina(const unidirected_graph<int>& grafo, const unidirected_graph<int>& coalbero){
+std::vector<std::vector<int>> cicli_depina(const unidirected_graph<int>& grafo, const unidirected_graph<int>& coalbero){
     int k = coalbero.all_edges().size();
     int m = grafo.all_edges().size();
     std::vector<std::vector<bool>> cicli(k, std::vector<bool>(m, false));
@@ -126,43 +210,6 @@ std::vector<std::vector<bool>> cicli_depina(const unidirected_graph<int>& grafo,
                 }
             }
         }
-    return cicli;
+    return cicli_depina_convertito(cicli,grafo);
     }
- 
-
-//conversione de pina da booleano con gli archi a ciclo con i nodi
-
-std::vector<std::vector<int>> cicli_depina_convertito(const std::vector<std::vector<bool>>& cicli, const unidirected_graph<int>& grafo){
-	int N = cicli.size();
-	int K = cicli[0].size();
-	std::vector<std::vector<int>> risultato;
 	
-	for(int i = 0; i<N; i++)
-	{
-		std::vector<int> v;
-		for(int j = 0; j < K; j++)
-		{
-			if(cicli[i][j])
-			{
-				unidirected_edge<int> arco = grafo.edge_at(j);
-				v.push_back(arco.from());
-				v.push_back(arco.to());	
-			}	
-		}
-		risultato.push_back(v);	
-		
-	}
-	
-	
-	return risultato;
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	}

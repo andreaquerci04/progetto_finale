@@ -16,7 +16,7 @@ bool recursive_findpath(const unidirected_graph<int>& albero, int u, int v, std:
 		
 		for(const auto&n : albero.neighbor(u))
 			{
-			if(!visited.contains(n)){
+			if(visited.find(n) == visited.end()) {
 				if(recursive_findpath(albero,n,v,visited,path)) return true;
 				}
 			}

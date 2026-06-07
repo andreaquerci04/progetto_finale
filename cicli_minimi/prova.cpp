@@ -45,23 +45,22 @@ int main(){
 	
 	G1.write_to_dot("grafo.dot");
 	
+
+	
 	
 	unidirected_graph<int> albero = recursive_dfs(G1,1);	
 	unidirected_graph<int> coalbero = G1 - albero;
 	
 	std::vector<std::vector<int>> cicli_1 = cicli_dfs(albero,coalbero);
-	std::vector<std::vector<bool>> cicli_2 = cicli_depina(G1,coalbero);
+	std::vector<std::vector<int>> cicli_2 = cicli_depina(G1,coalbero);
 	
-	std::vector<std::vector<int>> cicli_dep = cicli_depina_convertito(cicli_2,G1);
+
 	std::cout<< "cicli con dfs" << "\n";
 	print(cicli_1);
 	
 	
 	std::cout << "\n" << "cicli con de pina" <<"\n";
 	print(cicli_2);
-	
-	std::cout <<"\n" << "cicli de pina convertiti" << "\n";
-	print(cicli_dep);
-	
+
 	return 0;
 	}

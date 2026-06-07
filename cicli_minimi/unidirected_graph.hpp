@@ -18,7 +18,7 @@ class unidirected_graph{
 	public:
 	
 	//Costruttore di Defaul
-	unidirected_graph() : max_keys(0) {}
+	unidirected_graph() : max_keys(-1) {}
 	
 	
 	//Costruttore di Copia

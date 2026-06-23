@@ -1,14 +1,19 @@
 #include <iostream>
+#include <string>
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <iomanip> // per arrotondare il risultato 
 #include "../linear_system/gc.hpp"
-#include "../linear_system/matrices.hpp"
 #include "../cicli_minimi/visit.hpp"
 #include "../cicli_minimi/dfs.hpp"
 #include "../cicli_minimi/de_pina.hpp"
 #include "../cicli_minimi/unidirected_edge.hpp"
 #include "../cicli_minimi/unidirected_graph.hpp"
+#include "../netlist_parser/netlist_parser.hpp"
+#include "../netlist_parser/adapter_cicli.hpp"
+#include "../netlist_parser/circuit_components.hpp"
+#include "../netlist_parser/adapter_sistema_lineare.hpp"
+
 
 
 double condA(const Eigen::MatrixXd& A)
@@ -18,18 +23,14 @@ double condA(const Eigen::MatrixXd& A)
     return sv.maxCoeff() / sv.minCoeff();
 }
 
-int main(void)
+int main(int argc, char* argv[])
 {
-    unidirected_graph<int> G1;
-    G1.add_edge(1,3);
-    G1.add_edge(1,2);
-    G1.add_edge(1,4);
-    G1.add_edge(1,6);
-    G1.add_edge(3,5);
-    G1.add_edge(2,3);
-    G1.add_edge(2,4);
-    G1.add_edge(2,5);
+    const std::string nome_file = (argc > 1) ? argv[1] : "../netlist_prova.txt";
 
+    const netlist::CircuitoNetlist circuito = netlist::leggi_netlist_da_file(nome_file);
+    const auto G1 = netlist::costruisci_grafo_cicli(circuito);
+    auto resistori = converti_resistori_sistema(circuito);
+    auto generatori =  converti_generatori_sistema(circuito);
 
     unidirected_graph<int> albero = recursive_dfs(G1,1);	
 	unidirected_graph<int> coalbero = G1 - albero;
@@ -39,21 +40,6 @@ int main(void)
     for (auto& singolo_ciclo : cicli) {
     singolo_ciclo.push_back(singolo_ciclo.front());
     }
-
-    // --- input (assumendo che i dati siano di questo tipo) ---
-    std::vector<Resistori> resistori = {
-        { unidirected_edge<int>(2, 4), 4.0  },  // R1
-        { unidirected_edge<int>(1, 2), 10.0 },  // R2
-        { unidirected_edge<int>(1, 3), 30.0 },  // R3
-        { unidirected_edge<int>(2, 3), 10.0 },  // R4
-        { unidirected_edge<int>(2, 5), 4.0  }   // R5
-};
-
-    std::vector<Generatori> generatori = {
-        {1, 4, 30.0},  // V1: polo+ sul nodo 1, polo- sul nodo 4
-        {3, 5, 40.0}   // V2: polo+ sul nodo 3, polo- sul nodo 5
-    };
-    // ---------------------------------------------------------------
 
     // costruzione matrici
     Eigen::MatrixXd B = Matrice_B(cicli, resistori);

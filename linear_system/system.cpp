@@ -2,7 +2,7 @@
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <iomanip> // per arrotondare il risultato 
-#include "gc.hpp"
+#include "../conjugate_grad/gc.hpp"
 #include "matrices.hpp"
 
 double condA(const Eigen::MatrixXd& A)

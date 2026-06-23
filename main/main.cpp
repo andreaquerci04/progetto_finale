@@ -3,7 +3,7 @@
 #include <Eigen/Dense>
 #include <Eigen/SVD>
 #include <iomanip> // per arrotondare il risultato 
-#include "../linear_system/gc.hpp"
+#include "../conjugate_grad/gc.hpp"
 #include "../cicli_minimi/visit.hpp"
 #include "../cicli_minimi/dfs.hpp"
 #include "../cicli_minimi/de_pina.hpp"

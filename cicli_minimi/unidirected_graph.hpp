@@ -26,9 +26,10 @@ class unidirected_graph{
 		: lista_adiacenza(copia.lista_adiacenza),
 			archi(copia.archi),
 			dizionario_archi(copia.dizionario_archi),
+			dizionario_archi_inverso(copia.dizionario_archi_inverso),
 			nodi(copia.nodi),
-			max_keys(copia.max_keys),
-			dizionario_archi_inverso(copia.dizionario_archi_inverso)
+
+			max_keys(copia.max_keys)
 	{}
 	
 	

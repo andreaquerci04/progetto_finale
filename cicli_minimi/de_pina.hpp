@@ -62,7 +62,7 @@ std::vector<bool> find_minimun_cycle(const std::vector<bool>& S, const unidirect
 				}  
 				
 				
-                for(int k = 0; k+1 < cammino.size(); k++)
+                for(size_t k = 0; k+1 < cammino.size(); k++)
                 {
                     int nodo_a = conv_nodo(cammino[k],N);
                     int nodo_b = conv_nodo(cammino[k+1],N);
@@ -129,13 +129,13 @@ std::vector<int> ricostruisci_percorso(const std::unordered_set<int>& v, const u
 
     while (ciclo.size() < v.size()) {
         int corrente = ciclo.back();
-        bool trovato = false;
+
 
         for (const int& vicino : grafo.neighbor(corrente)) {
             if (v.count(vicino) && !visitati.count(vicino)) {
                 ciclo.push_back(vicino);
                 visitati.insert(vicino);
-                trovato = true;
+
                 break;
             }
         }
@@ -201,12 +201,12 @@ std::vector<std::vector<int>> cicli_depina(const unidirected_graph<int>& grafo, 
         i++;
         }
     //implementazione del ciclo finale
-    for(int i = 0; i <k; i++){
-        std::vector<bool> C = find_minimun_cycle(S[i], grafo);
-        cicli[i] = C;
-        for(int j = i+1; j < k; j ++){
+    for(int a = 0; a <k; a++){
+        std::vector<bool> C = find_minimun_cycle(S[a], grafo);
+        cicli[a] = C;
+        for(int j = a+1; j < k; j ++){
             if(dot_product(C,S[j])==1){
-                S[j] = XOR(S[j],S[i]);
+                S[j] = XOR(S[j],S[a]);
                 }
             }
         }

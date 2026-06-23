@@ -8,39 +8,40 @@
 #include <iostream>
 #include <Eigen/Dense>
 #include <algorithm>
+#include "../cicli_minimi/unidirected_edge.hpp"
 
 // MIO FILE .HPP PER LEGGERE GLI ARCHI (assumendo che le resistenze saranno definite come edges)
-template <typename T>
-class unidirected_edge {
-private:
-    T _from;
-    T _to;
-
-public:
-    unidirected_edge(T n1, T n2) {
-        _from = std::min(n1, n2);
-        _to   = std::max(n1, n2);
-    }
-
-    T from() const {
-        return _from;
-    }
-
-    T to() const {
-        return _to;
-    }
-
-    bool operator<(const unidirected_edge<T>& other) const{
-        if (_from != other._from){
-            return _from < other._from;
-        }
-        return _to < other._to;
-    }
-
-    bool operator==(const unidirected_edge<T>& other) const{
-        return (_from == other._from) && (_to == other._to);
-    }
-};
+//template <typename T>
+//class unidirected_edge {
+//private:
+//    T _from;
+//    T _to;
+//
+//public:
+//    unidirected_edge(T n1, T n2) {
+//        _from = std::min(n1, n2);
+//        _to   = std::max(n1, n2);
+//    }
+//
+//    T from() const {
+//        return _from;
+//    }
+//
+//    T to() const {
+//        return _to;
+//    }
+//
+//    bool operator<(const unidirected_edge<T>& other) const{
+//        if (_from != other._from){
+//            return _from < other._from;
+//        }
+//        return _to < other._to;
+//    }
+//
+//    bool operator==(const unidirected_edge<T>& other) const{
+//        return (_from == other._from) && (_to == other._to);
+//    }
+//};
 // ----------------------------------------------------------
 
 // definiti per provare il codice
@@ -49,7 +50,6 @@ struct Generatori {
     int polo_negativo;
     double valore_volt;
 };
-
 struct Resistori {
     unidirected_edge<int> arco_R;
     double valore_ohm;

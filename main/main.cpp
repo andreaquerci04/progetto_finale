@@ -55,12 +55,13 @@ int main(int argc, char* argv[])
         return -1;
     }
 
-    // check: A deve essere simmetrica
-    if (A(0, 1) != A(1, 0)){
+    // check: A deve essere simmetrica se ha dimensione N > 1
+    if (A.rows() > 1 && std::abs(A(0, 1) - A(1, 0)) > 1e-12){
+        std::cout << "La matrice non è simmetrica";
         return -1;
     }
 
-    std::cout << "Numero di condizionamento di A: " << condA(A) << "\n\n";
+    //std::cout << "Numero di condizionamento di A: " << condA(A) << "\n\n";
 
     // risoluzione con gradiente coniugato
     const unsigned int iter_max = 10000;
@@ -70,13 +71,13 @@ int main(int argc, char* argv[])
     auto result = conjugate_gradient(A, v, x0, iter_max, res_tol);
 
     std::cout << std::fixed << std::setprecision(2);
-    std::cout << "Iterazioni (it / it_max): "
-              << result.iter << " / " << iter_max << "\n";
-    std::cout << "Residuo relativo (res / tol): "
-              << result.relative_residual << " / " << res_tol << "\n\n";
+    //std::cout << "Iterazioni (it / it_max): "
+    //          << result.iter << " / " << iter_max << "\n";
+    //std::cout << "Residuo relativo (res / tol): "
+    //          << result.relative_residual << " / " << res_tol << "\n\n";
 
     // result.x contiene le correnti di maglia i_1, i_2, ...
-    std::cout << "Correnti di maglia:\n" << result.x << "\n\n";
+    //std::cout << "Correnti di maglia:\n" << result.x << "\n\n";
 
     // calcolo tensioni sui resistori: v_R = R * B * i
     Eigen::VectorXd tensioni = R * B * result.x;

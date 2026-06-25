@@ -62,7 +62,7 @@ Eigen::MatrixXd Matrice_B(const std::vector<std::vector<int>>& cicli, const std:
             std::pair<int,int> R_to_find = {resistenza.arco_R.from(), resistenza.arco_R.to()};
             
             if (std::find(vettore_archi.begin(), vettore_archi.end(), R_to_find) != vettore_archi.end())
-            { // !!! SAPERE BENE COSA FA QUESTO IF ESATTAMENTE
+            {
                 B(k, j) = 1.0;
             }
             
@@ -83,7 +83,7 @@ Eigen::MatrixXd Matrice_B(const std::vector<std::vector<int>>& cicli, const std:
 Eigen::MatrixXd Matrice_R(const std::vector<Resistori>& resistori){
     int n = resistori.size();
 
-    Eigen::MatrixXd R = Eigen::MatrixXd::Zero(n, n); //matrice 3x3 in questo esempio
+    Eigen::MatrixXd R = Eigen::MatrixXd::Zero(n, n); 
 
     for (int k = 0; k < n; k++){
         const auto& R_ohm = resistori[k].valore_ohm;
@@ -122,7 +122,7 @@ Eigen::VectorXd Vettore_v(const std::vector<std::vector<int>>& cicli, const std:
                 v(j) += generatore.valore_volt;  //segno negativo
             }
             
-        }   //qua questi due if sono invertiti rispetto a quelli delle resistenze. Il motivo è che consideriamo un generatore positivo
+        }   //qua questi due if sono invertiti rispetto a quelli delle resistenze perché consideriamo un generatore positivo
             //se si entra dal "-" e si esce dal "+", quindi se la coppia di nodi che indicano il generatore si trova in vettore_archi
             //(ovvero la direzione esatta con cui si percorre la maglia) il valore dovrà essere negativo.
     }

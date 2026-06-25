@@ -36,59 +36,75 @@ int main(int argc, char* argv[])
 	unidirected_graph<int> coalbero = G1 - albero;
 	
 	std::vector<std::vector<int>> cicli_1 = cicli_dfs(albero,coalbero);
-	std::vector<std::vector<int>> cicli = cicli_depina(G1,coalbero);
-    for (auto& singolo_ciclo : cicli) {
-    singolo_ciclo.push_back(singolo_ciclo.front());
+	std::vector<std::vector<int>> cicli_2 = cicli_depina(G1,coalbero);
+    auto cicli_dfs_depina = {cicli_1, cicli_2};
+    int counter = 0;
+
+    for (auto cicli : cicli_dfs_depina){
+        for (auto& singolo_ciclo : cicli) {
+            singolo_ciclo.push_back(singolo_ciclo.front());
+        }
+
+        // costruzione matrici
+        Eigen::MatrixXd B = Matrice_B(cicli, resistori);
+        Eigen::MatrixXd R = Matrice_R(resistori);
+        Eigen::VectorXd v = Vettore_v(cicli, generatori);
+
+        // sistema lineare A * i_maglia = v
+        Eigen::MatrixXd A = B.transpose() * R * B;
+
+        // check: A deve essere invertibile
+        const double tol = 1.0e-15;
+        if (abs(A.determinant()) < tol) {
+            std::cerr << "Errore: La matrice non è invertibile\n";
+            return -1;
+        }
+
+        // check: A deve essere simmetrica se ha dimensione N > 1
+        if (A.rows() > 1 && std::abs(A(0, 1) - A(1, 0)) > 1e-12){
+            std::cerr << "Errore: La matrice non è simmetrica\n";
+            return -1;
+        }
+
+        //std::cout << "Numero di condizionamento di A: " << condA(A) << "\n\n";
+
+        // risoluzione con gradiente coniugato
+        const unsigned int iter_max = 10000;
+        const double res_tol = 1.0e-12;
+
+        Eigen::VectorXd x0 = Eigen::VectorXd::Zero(cicli.size());
+        auto result = conjugate_gradient(A, v, x0, iter_max, res_tol);
+
+        std::cout << std::fixed << std::setprecision(2);
+        //std::cout << "Iterazioni (it / it_max): "
+        //          << result.iter << " / " << iter_max << "\n";
+        //std::cout << "Residuo relativo (res / tol): "
+        //          << result.relative_residual << " / " << res_tol << "\n\n";
+
+        // result.x contiene le correnti di maglia i_1, i_2, ...
+        //std::cout << "Correnti di maglia:\n" << result.x << "\n\n";
+
+        // calcolo tensioni sui resistori: v_R = R * B * i
+        Eigen::VectorXd tensioni = R * B * result.x;
+        if (counter == 0){
+            std::cout << "\nCICLI MINIMI con METODO basato sulla DFS\n";
+        }
+        
+        if (counter == 1){
+            std::cout << "\n\nCICLI MINIMI con ALGORITMO di DE PINA\n";
+        }
+
+        std::cout << "Tensioni e correnti sui resistori:\n";
+        for(int k = 0; k < (int)resistori.size(); k++) {
+        double V = tensioni(k);
+        double I = V / resistori[k].valore_ohm;
+        std::cout << "R" << k+1 
+                  << ": V = " << V << " volts"
+                  << ", I = " << I << " amps.\n";
+        }
+        
+        counter++;
     }
-
-    // costruzione matrici
-    Eigen::MatrixXd B = Matrice_B(cicli, resistori);
-    Eigen::MatrixXd R = Matrice_R(resistori);
-    Eigen::VectorXd v = Vettore_v(cicli, generatori);
-
-    // sistema lineare A * i_maglia = v
-    Eigen::MatrixXd A = B.transpose() * R * B;
-
-    // check: A deve essere invertibile
-    const double tol = 1.0e-15;
-    if (abs(A.determinant()) < tol) {
-        return -1;
-    }
-
-    // check: A deve essere simmetrica se ha dimensione N > 1
-    if (A.rows() > 1 && std::abs(A(0, 1) - A(1, 0)) > 1e-12){
-        std::cout << "La matrice non è simmetrica";
-        return -1;
-    }
-
-    //std::cout << "Numero di condizionamento di A: " << condA(A) << "\n\n";
-
-    // risoluzione con gradiente coniugato
-    const unsigned int iter_max = 10000;
-    const double res_tol = 1.0e-12;
-
-    Eigen::VectorXd x0 = Eigen::VectorXd::Zero(cicli.size());
-    auto result = conjugate_gradient(A, v, x0, iter_max, res_tol);
-
-    std::cout << std::fixed << std::setprecision(2);
-    //std::cout << "Iterazioni (it / it_max): "
-    //          << result.iter << " / " << iter_max << "\n";
-    //std::cout << "Residuo relativo (res / tol): "
-    //          << result.relative_residual << " / " << res_tol << "\n\n";
-
-    // result.x contiene le correnti di maglia i_1, i_2, ...
-    //std::cout << "Correnti di maglia:\n" << result.x << "\n\n";
-
-    // calcolo tensioni sui resistori: v_R = R * B * i
-    Eigen::VectorXd tensioni = R * B * result.x;
-    std::cout << "Tensioni e correnti sui resistori:\n";
-for (int k = 0; k < (int)resistori.size(); k++) {
-    double V = tensioni(k);
-    double I = V / resistori[k].valore_ohm;
-    std::cout << "R" << k+1 
-              << ": V = " << V << " volts"
-              << ", I = " << I << " amps.\n";
-}
 
     return 0;
 }

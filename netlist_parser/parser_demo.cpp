@@ -5,7 +5,7 @@
 #include <string>
 
 int main(int argc, char* argv[]) {
-    const std::string nome_file = (argc > 1) ? argv[1] : "netlist_prova.txt";
+    const std::string nome_file = (argc > 1) ? argv[1] : "../netlist_prova.txt";
 
     try {
         const netlist::CircuitoNetlist circuito = netlist::leggi_netlist_da_file(nome_file);
